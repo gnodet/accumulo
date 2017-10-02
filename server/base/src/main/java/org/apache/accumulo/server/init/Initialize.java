@@ -113,14 +113,15 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.utils.InfoCmp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.Parameter;
 import com.google.auto.service.AutoService;
 import com.google.common.base.Joiner;
-
-import jline.console.ConsoleReader;
 
 /**
  * This class is used to setup the directory structure and the root tablet to get an instance started
@@ -131,12 +132,12 @@ public class Initialize implements KeywordExecutable {
   private static final String DEFAULT_ROOT_USER = "root";
   private static final String TABLE_TABLETS_TABLET_DIR = "/table_info";
 
-  private static ConsoleReader reader = null;
+  private static LineReader reader = null;
   private static IZooReaderWriter zoo = null;
 
-  private static ConsoleReader getConsoleReader() throws IOException {
+  private static LineReader getConsoleReader() throws IOException {
     if (reader == null)
-      reader = new ConsoleReader();
+      reader = LineReaderBuilder.builder().build();
     return reader;
   }
 
@@ -234,17 +235,20 @@ public class Initialize implements KeywordExecutable {
       return false;
     }
     if (sconf.get(Property.INSTANCE_SECRET).equals(Property.INSTANCE_SECRET.getDefaultValue())) {
-      ConsoleReader c = getConsoleReader();
-      c.beep();
-      c.println();
-      c.println();
-      c.println("Warning!!! Your instance secret is still set to the default, this is not secure. We highly recommend you change it.");
-      c.println();
-      c.println();
-      c.println("You can change the instance secret in accumulo by using:");
-      c.println("   bin/accumulo " + org.apache.accumulo.server.util.ChangeSecret.class.getName());
-      c.println("You will also need to edit your secret in your configuration file by adding the property instance.secret to your accumulo-site.xml. "
-          + "Without this accumulo will not operate correctly");
+      LineReader c = getConsoleReader();
+      c.getTerminal().puts(InfoCmp.Capability.bell);
+      c.getTerminal().writer().println();
+      c.getTerminal().writer().println();
+      c.getTerminal().writer().println("Warning!!! Your instance secret is still set to the default, this is not secure. We highly recommend you change it.");
+      c.getTerminal().writer().println();
+      c.getTerminal().writer().println();
+      c.getTerminal().writer().println("You can change the instance secret in accumulo by using:");
+      c.getTerminal().writer().println("   bin/accumulo " + org.apache.accumulo.server.util.ChangeSecret.class.getName());
+      c.getTerminal()
+          .writer()
+          .println(
+              "You will also need to edit your secret in your configuration file by adding the property instance.secret to your accumulo-site.xml. "
+                  + "Without this accumulo will not operate correctly");
     }
     try {
       if (isInitialized(fs)) {
@@ -606,8 +610,8 @@ public class Initialize implements KeywordExecutable {
       return DEFAULT_ROOT_USER;
     }
 
-    ConsoleReader c = getConsoleReader();
-    c.println("Running against secured HDFS");
+    LineReader c = getConsoleReader();
+    c.getTerminal().writer().println("Running against secured HDFS");
 
     if (null != opts.rootUser) {
       return opts.rootUser;
@@ -805,7 +809,7 @@ public class Initialize implements KeywordExecutable {
         AccumuloServerContext context = new AccumuloServerContext(instance, new ServerConfigurationFactory(instance));
         if (isInitialized(fs)) {
           if (!opts.forceResetSecurity) {
-            ConsoleReader c = getConsoleReader();
+            LineReader c = getConsoleReader();
             String userEnteredName = c.readLine("WARNING: This will remove all users from Accumulo! If you wish to proceed enter the instance name: ");
             if (userEnteredName != null && !instance.getInstanceName().equals(userEnteredName)) {
               log.error("Aborted reset security: Instance name did not match current instance.");

@@ -41,7 +41,7 @@ public class GetAuthsCommand extends Command {
     // Sort authorizations
     Authorizations auths = shellState.getConnector().securityOperations().getUserAuthorizations(user);
     List<String> set = sortAuthorizations(auths);
-    shellState.getReader().println(StringUtils.join(set, ','));
+    shellState.getWriter().println(StringUtils.join(set, ','));
     return 0;
   }
 

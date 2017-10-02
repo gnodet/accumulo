@@ -83,6 +83,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.tools.DistCp;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -98,8 +101,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-
-import jline.console.ConsoleReader;
 
 @Category({MiniClusterOnlyTests.class, SunnyDayTests.class})
 public class ShellServerIT extends SharedMiniClusterBase {
@@ -169,7 +170,7 @@ public class ShellServerIT extends SharedMiniClusterBase {
       // start the shell
       output = new TestOutputStream();
       input = new StringInputStream();
-      shell = new Shell(new ConsoleReader(input, output));
+      shell = new Shell(LineReaderBuilder.builder().terminal(TerminalBuilder.builder().streams(input, output).build()).build());
       shell.setLogErrorsToConsole();
       if (clientConf.getBoolean(ClientProperty.INSTANCE_RPC_SASL_ENABLED.getKey(), false)) {
         // Pull the kerberos principal out when we're using SASL
@@ -797,7 +798,7 @@ public class ShellServerIT extends SharedMiniClusterBase {
   @Test
   public void clearCls() throws Exception {
     // clear/cls
-    if (ts.shell.getReader().getTerminal().isAnsiSupported()) {
+    if (!Terminal.TYPE_DUMB.equalsIgnoreCase(ts.shell.getReader().getTerminal().getType())) {
       ts.exec("cls", true, "[1;1H");
       ts.exec("clear", true, "[2J");
     } else {

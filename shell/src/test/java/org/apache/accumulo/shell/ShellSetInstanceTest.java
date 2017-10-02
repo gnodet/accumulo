@@ -45,6 +45,8 @@ import org.apache.accumulo.core.zookeeper.ZooUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Level;
 import org.easymock.EasyMock;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.TerminalBuilder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -56,8 +58,6 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import jline.console.ConsoleReader;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("javax.security.*")
@@ -111,7 +111,7 @@ public class ShellSetInstanceTest {
   public void setup() throws IOException {
     Shell.log.setLevel(Level.OFF);
     output = new TestOutputStream();
-    shell = new Shell(new ConsoleReader(new FileInputStream(FileDescriptor.in), output));
+    shell = new Shell(LineReaderBuilder.builder().terminal(TerminalBuilder.builder().streams(new FileInputStream(FileDescriptor.in), output).build()).build());
     shell.setLogErrorsToConsole();
   }
 

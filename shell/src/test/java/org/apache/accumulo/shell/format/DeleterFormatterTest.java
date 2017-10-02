@@ -42,11 +42,11 @@ import org.apache.accumulo.core.data.Mutation;
 import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.util.format.FormatterConfig;
 import org.apache.accumulo.shell.Shell;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.impl.DumbTerminal;
 import org.junit.Before;
 import org.junit.Test;
-
-import jline.UnsupportedTerminal;
-import jline.console.ConsoleReader;
 
 public class DeleterFormatterTest {
   DeleterFormatter formatter;
@@ -56,7 +56,7 @@ public class DeleterFormatterTest {
   Shell shellState;
 
   ByteArrayOutputStream baos;
-  ConsoleReader reader;
+  LineReader reader;
 
   SettableInputStream input;
 
@@ -89,7 +89,7 @@ public class DeleterFormatterTest {
 
     shellState = createNiceMock(Shell.class);
 
-    reader = new ConsoleReader(input, baos, new UnsupportedTerminal());
+    reader = LineReaderBuilder.builder().terminal(new DumbTerminal(input, baos)).build();
     expect(shellState.getReader()).andReturn(reader).anyTimes();
 
     replay(writer, exceptionWriter, shellState);
@@ -167,7 +167,7 @@ public class DeleterFormatterTest {
   }
 
   private void verify(String... chunks) throws IOException {
-    reader.flush();
+    reader.getTerminal().flush();
 
     String output = baos.toString();
     for (String chunk : chunks) {

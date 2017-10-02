@@ -44,7 +44,7 @@ public class MaxRowCommand extends ScanCommand {
       final Text max = shellState.getConnector().tableOperations()
           .getMaxRow(tableName, auths, startRow, range.isStartKeyInclusive(), endRow, range.isEndKeyInclusive());
       if (max != null) {
-        shellState.getReader().println(max.toString());
+        shellState.getWriter().println(max.toString());
       }
     } catch (Exception e) {
       log.debug("Could not get shell state.", e);

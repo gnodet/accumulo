@@ -82,7 +82,7 @@ public class DUCommand extends Command {
       String valueFormat = prettyPrint ? "%9s" : "%,24d";
       for (DiskUsage usage : shellState.getConnector().tableOperations().getDiskUsage(tables)) {
         Object value = prettyPrint ? NumUtil.bigNumberForSize(usage.getUsage()) : usage.getUsage();
-        shellState.getReader().println(String.format(valueFormat + " %s", value, usage.getTables()));
+        shellState.getWriter().println(String.format(valueFormat + " %s", value, usage.getTables()));
       }
     } catch (Exception ex) {
       throw new RuntimeException(ex);

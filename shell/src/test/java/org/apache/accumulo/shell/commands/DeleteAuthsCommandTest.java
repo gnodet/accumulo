@@ -22,10 +22,9 @@ import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.shell.Shell;
 import org.apache.commons.cli.CommandLine;
 import org.easymock.EasyMock;
+import org.jline.reader.LineReader;
 import org.junit.Before;
 import org.junit.Test;
-
-import jline.console.ConsoleReader;
 
 /**
  *
@@ -47,7 +46,7 @@ public class DeleteAuthsCommandTest {
     Connector conn = EasyMock.createMock(Connector.class);
     CommandLine cli = EasyMock.createMock(CommandLine.class);
     Shell shellState = EasyMock.createMock(Shell.class);
-    ConsoleReader reader = EasyMock.createMock(ConsoleReader.class);
+    LineReader reader = EasyMock.createMock(LineReader.class);
     SecurityOperations secOps = EasyMock.createMock(SecurityOperations.class);
 
     EasyMock.expect(shellState.getConnector()).andReturn(conn);
@@ -75,7 +74,7 @@ public class DeleteAuthsCommandTest {
     Connector conn = EasyMock.createMock(Connector.class);
     CommandLine cli = EasyMock.createMock(CommandLine.class);
     Shell shellState = EasyMock.createMock(Shell.class);
-    ConsoleReader reader = EasyMock.createMock(ConsoleReader.class);
+    LineReader reader = EasyMock.createMock(LineReader.class);
     SecurityOperations secOps = EasyMock.createMock(SecurityOperations.class);
 
     EasyMock.expect(shellState.getConnector()).andReturn(conn);
@@ -103,7 +102,7 @@ public class DeleteAuthsCommandTest {
     Connector conn = EasyMock.createMock(Connector.class);
     CommandLine cli = EasyMock.createMock(CommandLine.class);
     Shell shellState = EasyMock.createMock(Shell.class);
-    ConsoleReader reader = EasyMock.createMock(ConsoleReader.class);
+    LineReader reader = EasyMock.createMock(LineReader.class);
     SecurityOperations secOps = EasyMock.createMock(SecurityOperations.class);
 
     EasyMock.expect(shellState.getConnector()).andReturn(conn);

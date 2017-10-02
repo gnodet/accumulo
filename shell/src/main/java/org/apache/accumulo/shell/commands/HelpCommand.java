@@ -92,7 +92,7 @@ public class HelpCommand extends Command {
     for (String cmd : cl.getArgs()) {
       final Command c = shellState.commandFactory.get(cmd);
       if (c == null) {
-        shellState.getReader().println(String.format("Unknown command \"%s\".  Enter \"help\" for a list possible commands.", cmd));
+        shellState.getWriter().println(String.format("Unknown command \"%s\".  Enter \"help\" for a list possible commands.", cmd));
       } else {
         c.printHelp(shellState, numColumns);
       }

@@ -32,13 +32,13 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.log4j.Level;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.TerminalBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jline.console.ConsoleReader;
 
 public class ShellTest {
   private static final Logger log = LoggerFactory.getLogger(ShellTest.class);
@@ -128,7 +128,7 @@ public class ShellTest {
     output = new TestOutputStream();
     input = new StringInputStream();
     config = Files.createTempFile(null, null).toFile();
-    shell = new Shell(new ConsoleReader(input, output));
+    shell = new Shell(LineReaderBuilder.builder().terminal(TerminalBuilder.builder().streams(input, output).build()).build());
     shell.setLogErrorsToConsole();
     shell.config("--config-file", config.toString(), "--fake", "-u", "test", "-p", "secret");
   }

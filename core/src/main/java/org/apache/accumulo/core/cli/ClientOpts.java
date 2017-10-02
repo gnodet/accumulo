@@ -54,12 +54,12 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
 
 import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.Parameter;
-
-import jline.console.ConsoleReader;
 
 public class ClientOpts extends Help {
 
@@ -105,7 +105,7 @@ public class ClientOpts extends Help {
       if (System.console() == null) {
         throw new IOException("Attempted to prompt user on the console when System.console = null");
       }
-      ConsoleReader reader = new ConsoleReader();
+      LineReader reader = LineReaderBuilder.builder().build();
       String enteredPass = reader.readLine("Enter password: ", '*');
       return new Password(enteredPass);
     }

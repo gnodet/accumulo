@@ -16,7 +16,6 @@
  */
 package org.apache.accumulo.shell.format;
 
-import java.io.IOException;
 import java.util.Map.Entry;
 
 import org.apache.accumulo.core.client.BatchWriter;
@@ -74,29 +73,24 @@ public class DeleterFormatter extends DefaultFormatter {
     Mutation m = new Mutation(key.getRow());
     String entryStr = formatEntry(next, isDoTimestamps());
     boolean delete = force;
-    try {
-      if (!force) {
-        shellState.getReader().flush();
-        String line = shellState.getReader().readLine("Delete { " + entryStr + " } ? ");
-        more = line != null;
-        delete = line != null && (line.equalsIgnoreCase("y") || line.equalsIgnoreCase("yes"));
-      }
-      if (delete) {
-        m.putDelete(key.getColumnFamily(), key.getColumnQualifier(), new ColumnVisibility(key.getColumnVisibility()), key.getTimestamp());
-        try {
-          writer.addMutation(m);
-        } catch (MutationsRejectedException e) {
-          log.error(e.toString());
-          if (Shell.isDebuggingEnabled())
-            for (ConstraintViolationSummary cvs : e.getConstraintViolationSummaries())
-              log.trace(cvs.toString());
-        }
-      }
-      shellState.getReader().print(String.format("[%s] %s%n", delete ? "DELETED" : "SKIPPED", entryStr));
-    } catch (IOException e) {
-      log.error("Cannot write to console", e);
-      throw new RuntimeException(e);
+    if (!force) {
+      shellState.getWriter().flush();
+      String line = shellState.getReader().readLine("Delete { " + entryStr + " } ? ");
+      more = line != null;
+      delete = line != null && (line.equalsIgnoreCase("y") || line.equalsIgnoreCase("yes"));
     }
+    if (delete) {
+      m.putDelete(key.getColumnFamily(), key.getColumnQualifier(), new ColumnVisibility(key.getColumnVisibility()), key.getTimestamp());
+      try {
+        writer.addMutation(m);
+      } catch (MutationsRejectedException e) {
+        log.error(e.toString());
+        if (Shell.isDebuggingEnabled())
+          for (ConstraintViolationSummary cvs : e.getConstraintViolationSummaries())
+            log.trace(cvs.toString());
+      }
+    }
+    shellState.getWriter().print(String.format("[%s] %s%n", delete ? "DELETED" : "SKIPPED", entryStr));
     return null;
   }
 }

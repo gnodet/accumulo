@@ -30,8 +30,9 @@ import org.apache.accumulo.shell.Shell;
 import org.apache.accumulo.shell.ShellOptionsJC;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.vfs2.FileSystemException;
-
-import jline.console.ConsoleReader;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.TerminalBuilder;
 
 /**
  * An Accumulo Shell implementation that allows a developer to attach an InputStream and Writer to the Shell for testing purposes.
@@ -60,15 +61,14 @@ public class MockShell extends Shell {
 
     // Update the ConsoleReader with the input and output "redirected"
     try {
-      this.reader = new ConsoleReader(in, out);
+      this.reader = LineReaderBuilder.builder().terminal(TerminalBuilder.builder().streams(in, out).build()).build();
     } catch (Exception e) {
       printException(e);
       return false;
     }
 
     // Don't need this for testing purposes
-    this.reader.setHistoryEnabled(false);
-    this.reader.setPaginationEnabled(false);
+    this.reader.setVariable(LineReader.DISABLE_HISTORY, "true");
 
     // Make the parsing from the client easier;
     this.verbose = false;
@@ -107,10 +107,9 @@ public class MockShell extends Shell {
       if (hasExited())
         return exitCode;
 
-      reader.setPrompt(getDefaultPrompt());
-      input = reader.readLine();
+      input = reader.readLine(getDefaultPrompt());
       if (input == null) {
-        reader.println();
+        reader.getTerminal().writer().println();
         return exitCode;
       } // user canceled
 

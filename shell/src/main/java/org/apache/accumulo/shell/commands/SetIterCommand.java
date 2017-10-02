@@ -17,6 +17,7 @@
 package org.apache.accumulo.shell.commands;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,8 +48,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
-
-import jline.console.ConsoleReader;
+import org.jline.reader.LineReader;
 
 public class SetIterCommand extends Command {
 
@@ -84,7 +84,7 @@ public class SetIterCommand extends Command {
     ClassLoader classloader = shellState.getClassLoader(cl, shellState);
 
     // Get the iterator options, with potentially a name provided by the OptionDescriber impl or through user input
-    String configuredName = setUpOptions(classloader, shellState.getReader(), classname, options);
+    String configuredName = setUpOptions(classloader, shellState.getReader(), shellState.getWriter(), classname, options);
 
     // Try to get the name provided by the setiter command
     String name = cl.getOptionValue(nameOpt.getOpt(), null);
@@ -192,8 +192,8 @@ public class SetIterCommand extends Command {
     shellState.getConnector().namespaceOperations().attachIterator(namespace, setting, scopes);
   }
 
-  private static String setUpOptions(ClassLoader classloader, final ConsoleReader reader, final String className, final Map<String,String> options)
-      throws IOException, ShellCommandException {
+  private static String setUpOptions(ClassLoader classloader, final LineReader reader, PrintWriter writer, final String className,
+      final Map<String,String> options) throws IOException, ShellCommandException {
     String input;
     @SuppressWarnings("rawtypes")
     SortedKeyValueIterator untypedInstance;
@@ -248,16 +248,16 @@ public class SetIterCommand extends Command {
         }
         localOptions.clear();
 
-        reader.println(itopts.getDescription());
+        writer.println(itopts.getDescription());
 
         String prompt;
         if (itopts.getNamedOptions() != null) {
           for (Entry<String,String> e : itopts.getNamedOptions().entrySet()) {
             prompt = Shell.repeat("-", 10) + "> set " + shortClassName + " parameter " + e.getKey() + ", " + e.getValue() + ": ";
-            reader.flush();
+            writer.flush();
             input = reader.readLine(prompt);
             if (input == null) {
-              reader.println();
+              writer.println();
               throw new IOException("Input stream closed");
             }
             // Places all Parameters and Values into the LocalOptions, even if the value is "".
@@ -269,14 +269,14 @@ public class SetIterCommand extends Command {
 
         if (itopts.getUnnamedOptionDescriptions() != null) {
           for (String desc : itopts.getUnnamedOptionDescriptions()) {
-            reader.println(Shell.repeat("-", 10) + "> entering options: " + desc);
+            writer.println(Shell.repeat("-", 10) + "> entering options: " + desc);
             input = "start";
             prompt = Shell.repeat("-", 10) + "> set " + shortClassName + " option (<name> <value>, hit enter to skip): ";
             while (true) {
-              reader.flush();
+              writer.flush();
               input = reader.readLine(prompt);
               if (input == null) {
-                reader.println();
+                writer.println();
                 throw new IOException("Input stream closed");
               } else {
                 input = new String(input);
@@ -293,31 +293,31 @@ public class SetIterCommand extends Command {
 
         options.putAll(localOptions);
         if (!iterOptions.validateOptions(options))
-          reader.println("invalid options for " + clazz.getName());
+          writer.println("invalid options for " + clazz.getName());
 
       } while (!iterOptions.validateOptions(options));
     } else {
-      reader.flush();
-      reader.println("The iterator class does not implement OptionDescriber. Consider this for better iterator configuration using this setiter command.");
+      writer.flush();
+      writer.println("The iterator class does not implement OptionDescriber. Consider this for better iterator configuration using this setiter command.");
       iteratorName = reader.readLine("Name for iterator (enter to skip): ");
       if (null == iteratorName) {
-        reader.println();
+        writer.println();
         throw new IOException("Input stream closed");
       } else if (StringUtils.isWhitespace(iteratorName)) {
         // Treat whitespace or empty string as no name provided
         iteratorName = null;
       }
 
-      reader.flush();
-      reader.println("Optional, configure name-value options for iterator:");
+      writer.flush();
+      writer.println("Optional, configure name-value options for iterator:");
       String prompt = Shell.repeat("-", 10) + "> set option (<name> <value>, hit enter to skip): ";
       final HashMap<String,String> localOptions = new HashMap<>();
 
       while (true) {
-        reader.flush();
+        writer.flush();
         input = reader.readLine(prompt);
         if (input == null) {
-          reader.println();
+          writer.println();
           throw new IOException("Input stream closed");
         } else if (StringUtils.isWhitespace(input)) {
           break;

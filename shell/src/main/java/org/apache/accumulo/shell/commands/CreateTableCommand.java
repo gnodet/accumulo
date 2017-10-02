@@ -65,7 +65,7 @@ public class CreateTableCommand extends Command {
     final HashMap<String,String> props = new HashMap<>();
 
     if (!testTableName.matches(Tables.VALID_NAME_REGEX)) {
-      shellState.getReader().println("Only letters, numbers and underscores are allowed for use in table names.");
+      shellState.getWriter().println("Only letters, numbers and underscores are allowed for use in table names.");
       throw new IllegalArgumentException();
     }
 

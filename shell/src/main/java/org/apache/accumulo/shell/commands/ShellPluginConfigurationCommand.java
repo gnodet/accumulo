@@ -57,7 +57,7 @@ public abstract class ShellPluginConfigurationCommand extends Command {
       // Remove the property
       removePlugin(cl, shellState, tableName);
 
-      shellState.getReader().println("Removed " + pluginType + " on " + tableName);
+      shellState.getWriter().println("Removed " + pluginType + " on " + tableName);
     } else if (cl.hasOption(listPluginOption.getOpt())) {
       // Get the options for this table
       final Iterator<Entry<String,String>> iter = shellState.getConnector().tableOperations().getProperties(tableName).iterator();
@@ -67,7 +67,7 @@ public abstract class ShellPluginConfigurationCommand extends Command {
 
         // List all parameters with the property name
         if (ent.getKey().startsWith(tableProp.toString())) {
-          shellState.getReader().println(ent.getKey() + ": " + ent.getValue());
+          shellState.getWriter().println(ent.getKey() + ": " + ent.getValue());
         }
       }
     } else {

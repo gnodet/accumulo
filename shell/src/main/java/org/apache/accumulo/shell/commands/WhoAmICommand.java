@@ -25,7 +25,7 @@ import org.apache.commons.cli.CommandLine;
 public class WhoAmICommand extends Command {
   @Override
   public int execute(final String fullCommand, final CommandLine cl, final Shell shellState) throws IOException {
-    shellState.getReader().println(shellState.getConnector().whoami());
+    shellState.getWriter().println(shellState.getConnector().whoami());
     return 0;
   }
 

@@ -43,14 +43,13 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-
-import jline.console.ConsoleReader;
+import org.jline.reader.LineReader;
 
 public class ConfigCommand extends Command {
   private Option tableOpt, deleteOpt, setOpt, filterOpt, disablePaginationOpt, outputFileOpt, namespaceOpt;
 
   private int COL1 = 10, COL2 = 7;
-  private ConsoleReader reader;
+  private LineReader reader;
 
   @Override
   public void registerCompletion(final Token root, final Map<Command.CompletionSet,Set<String>> completionSet) {

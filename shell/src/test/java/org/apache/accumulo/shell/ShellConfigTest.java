@@ -31,6 +31,8 @@ import org.apache.accumulo.core.client.ClientConfiguration;
 import org.apache.accumulo.core.client.security.tokens.PasswordToken;
 import org.apache.accumulo.shell.ShellTest.TestOutputStream;
 import org.apache.log4j.Level;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.TerminalBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.ParameterException;
-
-import jline.console.ConsoleReader;
 
 public class ShellConfigTest {
   TestOutputStream output;
@@ -57,7 +57,7 @@ public class ShellConfigTest {
     System.setOut(new PrintStream(output));
     config = Files.createTempFile(null, null).toFile();
 
-    shell = new Shell(new ConsoleReader(new FileInputStream(FileDescriptor.in), output));
+    shell = new Shell(LineReaderBuilder.builder().terminal(TerminalBuilder.builder().streams(new FileInputStream(FileDescriptor.in), output).build()).build());
     shell.setLogErrorsToConsole();
   }
 

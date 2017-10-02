@@ -38,14 +38,14 @@ public class UserPermissionsCommand extends Command {
     final String user = cl.getOptionValue(userOpt.getOpt(), shellState.getConnector().whoami());
 
     String delim = "";
-    shellState.getReader().print("System permissions: ");
+    shellState.getWriter().print("System permissions: ");
     for (SystemPermission p : SystemPermission.values()) {
       if (p != null && shellState.getConnector().securityOperations().hasSystemPermission(user, p)) {
-        shellState.getReader().print(delim + "System." + p.name());
+        shellState.getWriter().print(delim + "System." + p.name());
         delim = ", ";
       }
     }
-    shellState.getReader().println();
+    shellState.getWriter().println();
 
     boolean runOnce = true;
     for (String n : shellState.getConnector().namespaceOperations().list()) {
@@ -53,16 +53,16 @@ public class UserPermissionsCommand extends Command {
       for (NamespacePermission p : NamespacePermission.values()) {
         if (p != null && shellState.getConnector().securityOperations().hasNamespacePermission(user, n, p)) {
           if (runOnce) {
-            shellState.getReader().print("\nNamespace permissions (" + n + "): ");
+            shellState.getWriter().print("\nNamespace permissions (" + n + "): ");
             runOnce = false;
           }
-          shellState.getReader().print(delim + "Namespace." + p.name());
+          shellState.getWriter().print(delim + "Namespace." + p.name());
           delim = ", ";
         }
       }
       runOnce = true;
     }
-    shellState.getReader().println();
+    shellState.getWriter().println();
 
     runOnce = true;
     for (String t : shellState.getConnector().tableOperations().list()) {
@@ -70,17 +70,17 @@ public class UserPermissionsCommand extends Command {
       for (TablePermission p : TablePermission.values()) {
         if (shellState.getConnector().securityOperations().hasTablePermission(user, t, p) && p != null) {
           if (runOnce) {
-            shellState.getReader().print("\nTable permissions (" + t + "): ");
+            shellState.getWriter().print("\nTable permissions (" + t + "): ");
             runOnce = false;
           }
-          shellState.getReader().print(delim + "Table." + p.name());
+          shellState.getWriter().print(delim + "Table." + p.name());
           delim = ", ";
         }
 
       }
       runOnce = true;
     }
-    shellState.getReader().println();
+    shellState.getWriter().println();
 
     return 0;
   }
